@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 
 export default function ProveedorForm({ onProveedorCreado, proveedorEditando, onCancelarEdicion }) {
     const [formData, setFormData] = useState({
@@ -53,13 +53,13 @@ export default function ProveedorForm({ onProveedorCreado, proveedorEditando, on
                     activo: formData.activo
                 };
 
-                await axios.put(`http://localhost:5205/api/proveedores/${proveedorEditando.id}`, updateData);
+                await axiosClient.put(`/proveedores/${proveedorEditando.id}`, updateData);
             } else {
 
-                await axios.post('http://localhost:5205/api/proveedores', formData);
+                await axiosClient.post('/proveedores', formData);
             }
 
-            setFormData({ nombreEmpresa: '', contacto: '', email: '', telefono: 0, activo: true });
+            setFormData({ nombreEmpresa: '', contacto: '', email: '', telefono: '', activo: true });
             onProveedorCreado();
             if (onCancelarEdicion) onCancelarEdicion();
 

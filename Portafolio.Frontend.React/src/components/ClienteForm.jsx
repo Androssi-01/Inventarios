@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 
 export default function ClienteForm({ onClienteCreado, clienteEditando, onCancelarEdicion }) {
     const [formData, setFormData] = useState({
@@ -43,10 +43,10 @@ export default function ClienteForm({ onClienteCreado, clienteEditando, onCancel
         try {
             if (clienteEditando) {
 
-                await axios.put(`http://localhost:5205/api/clientes/${clienteEditando.id}`, formData);
+                await axiosClient.put(`/clientes/${clienteEditando.id}`, formData);
             } else {
 
-                await axios.post('http://localhost:5205/api/clientes', formData);
+                await axiosClient.post('/clientes', formData);
             }
 
             setFormData({ nombre: '', email: '', telefono: '', direccion: '', activo: true });

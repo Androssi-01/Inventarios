@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 
 export default function ProductoForm({ onProductoCreado, productoEditando, onCancelarEdicion }) {
     const [formData, setFormData] = useState({
@@ -60,10 +60,10 @@ export default function ProductoForm({ onProductoCreado, productoEditando, onCan
                     activo: formData.activo
                 };
 
-                await axios.put(`http://localhost:5205/api/productos/${productoEditando.id}`, updateData);
+                await axiosClient.put(`/productos/${productoEditando.id}`, updateData);
             } else {
 
-                await axios.post('http://localhost:5205/api/productos', formData);
+                await axiosClient.post('/productos', formData);
             }
 
             setFormData({ sku: '', nombre: '', descripcion: '', precio: 0, stock: 0, activo: true });
