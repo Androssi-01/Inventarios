@@ -1,0 +1,74 @@
+@page "/clientes"
+@using Portafolio.Frontend.Blazor.Models
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+
+<h3>Lista de Clientes</h3>
+
+<a href="/clientes/crear" class="btn btn-success mb-3">➕ Nuevo Cliente</a>
+
+@if (clientes == null)
+{
+    <p><em>Cargando clientes...</em></p>
+}
+
+else if (!clientes.Items.Any())
+{
+    <p>No hay clientes registrados.</p>
+}
+else
+{
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Activo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cliente in clientes.Items)
+            {
+                <tr>
+                    <td>@cliente.Id</td>
+                    <td>@cliente.Nombre</td>
+                    <td>@cliente.Email</td>
+                    <td>@(string.IsNullOrEmpty(cliente.Telefono) ? "N/A" : cliente.Telefono)</td>
+                    <td>@(cliente.Activo ? "✅" : "❌")</td>
+                    <td>
+                        <a href="/clientes/editar/@cliente.Id" class="btn btn-sm btn-outline-primary me-2">✏️ Editar</a>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="() => EliminarCliente(cliente.Id)">🗑️
+                            Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <p><strong>Total de registros:</strong> @clientes.TotalRegistros</p>
+    }
+
+@code {
+    private PagedResult<ClienteDto>? clientes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        clientes = await Http.GetFromJsonAsync<PagedResult<ClienteDto>>(requestUri: "api/clientes");
+    }
+
+    private async Task EliminarCliente(int id)
+    {
+        bool confimar = await JSRuntime.InvokeAsync<bool>(identifier: "confirm", args: "¿Está seguro de que desea eliminar este cliente?");
+        if (confimar)
+        {
+            HttpResponseMessage? response = await Http.DeleteAsync(requestUri: $"api/clientes/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                clientes = await Http.GetFromJsonAsync<PagedResult<ClienteDto>>(requestUri: "api/clientes");
+            }
+        }
+    }
+}

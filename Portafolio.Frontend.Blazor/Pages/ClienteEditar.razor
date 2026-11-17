@@ -1,0 +1,76 @@
+@page "/clientes/editar/{Id:int}"
+@using Portafolio.Frontend.Blazor.Models
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h3>Editar Cliente</h3>
+
+@if (cliente == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="@cliente" OnValidSubmit="ActualizarCliente">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText @bind-Value="cliente.Nombre" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Teléfono</label>
+                    <InputText @bind-Value="cliente.Telefono" class="form-control" />
+                </div>
+
+                <div>
+                    <label class="form-label">Direccion</label>
+                    <InputText @bind-Value="cliente.Direccion" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-primary"> Guardar Cambios </button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private ClienteUpdateDto? cliente;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClienteDto? clienteApi = await Http.GetFromJsonAsync<ClienteDto>(requestUri: $"api/clientes/{Id}");
+
+        if (clienteApi != null)
+        {
+            cliente = new ClienteUpdateDto
+            {
+                Nombre = clienteApi.Nombre,
+                Telefono = clienteApi.Telefono,
+                Direccion = clienteApi.Direccion,
+                Activo = clienteApi.Activo
+            };
+        }
+    }
+    private async Task ActualizarCliente()
+    {
+        HttpResponseMessage? response = await Http.PutAsJsonAsync(requestUri: $"api/clientes/{Id}", cliente);
+        if (response.IsSuccessStatusCode)
+        {
+            Nav.NavigateTo(uri: "/clientes");
+        }
+        else
+        {
+            Console.WriteLine(value: "Error al actualizar el cliente.");
+        }
+    }
+
+}

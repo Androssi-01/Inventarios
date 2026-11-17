@@ -1,0 +1,22 @@
+# ===== Backend (.NET) =====
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# ===== Frontend (Node.js / React) =====
+node_modules/
+build/
+dist/
+.env
+.env.local
+
+# ===== Sistema Operativo =====
+.DS_Store
+Thumbs.db
+
+# ===== Visual Studio Code =====
+.vscode/
+
+drawdb/

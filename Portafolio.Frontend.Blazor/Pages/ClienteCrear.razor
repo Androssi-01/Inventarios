@@ -1,0 +1,73 @@
+@page "/clientes/crear"
+@using Portafolio.Frontend.Blazor.Models
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h3>Crear Nuevo Cliente</h3>
+
+@if (errorMensaje != null)
+{
+    <div class="alert alert-danger">@errorMensaje</div>
+}
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="@nuevoCliente" OnValidSubmit="CrearCliente">
+
+            <DataAnnotationsValidator />
+            
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <InputText @bind-Value="nuevoCliente.Nombre" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <InputText @bind-Value="nuevoCliente.Email" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Teléfono</label>
+                <InputText @bind-Value="nuevoCliente.Telefono" class="form-control" />
+            </div>
+
+            <div>
+                <label class="form-label">Direccion</label>
+                <InputText @bind-Value="nuevoCliente.Direccion" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary"> Guardar Cliente </button>
+            <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    private ClienteCreateDto nuevoCliente = new();
+
+    private string? errorMensaje;
+
+    private async Task CrearCliente()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/clientes", nuevoCliente);
+            if (response.IsSuccessStatusCode)
+            {
+                Nav.NavigateTo(uri: "/clientes");
+            }
+            else
+            {
+                errorMensaje = "Error al crear el cliente. Por favor, verifique los datos ingresados.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMensaje = $"Error al crear el cliente: {ex.Message}";
+        }
+    }
+    private void Cancelar()
+    {
+        Nav.NavigateTo(uri: "/clientes");
+    }
+}

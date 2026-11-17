@@ -1,0 +1,95 @@
+# ==================== GET ====================
+
+### Obtener todos los clientes
+GET http://localhost:5205/api/clientes
+
+### Obtener cliente por ID
+GET http://localhost:5205/api/clientes/4
+
+### Obtener cliente que no existe
+GET http://localhost:5205/api/clientes/99999
+
+# ==================== POST ====================
+
+### Crear un cliente (válido)
+POST http://localhost:5205/api/clientes
+Content-Type: application/json
+
+{
+  "nombre": "Pedro Ramírez pruebasiete",
+  "email": "pedro.ramirez.pruebasiete@example.com",
+  "telefono": "555-7777111",
+  "direccion": "Calle Juárez 455qqq"
+}
+
+### Crear un cliente (inválido — debe dar 400)
+POST http://localhost:5205/api/clientes
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "email": "no-es-un-email1111",
+  "telefono": null,
+  "direccion": null
+}
+
+# ==================== PUT ====================
+
+### Actualizar cliente
+PUT http://localhost:5205/api/clientes/7
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "telefono": "555-9999",
+  "direccion": "Nueva Dirección 999",
+  "activo": false
+}
+
+### Intentar actualizar cliente que no existe
+PUT http://localhost:5205/api/clientes/99999
+Content-Type: application/json
+
+{
+  "nombre": "Fantasma",
+  "telefono": null,
+  "direccion": null,
+  "activo": true
+}
+
+# ==================== DELETE ====================
+
+### Borrar cliente
+DELETE http://localhost:5205/api/clientes/7
+
+### Intentar borrar cliente que no existe
+DELETE http://localhost:5205/api/clientes/99999
+
+### Verificar el estado final
+GET http://localhost:5205/api/clientes
+
+
+
+
+#=========================================Paginacion API/GET=================================
+http
+### Listar con paginación por defecto (pagina 1, tamano 10)
+GET http://localhost:5205/api/clientes
+
+### Pagina 2 con 3 por pagina
+GET http://localhost:5205/api/clientes?pagina=2&tamano=3
+
+### Buscar por texto
+GET http://localhost:5205/api/clientes?buscar=ana
+
+### Ordenar por email descendente
+GET http://localhost:5205/api/clientes?ordenarPor=email&dir=desc
+
+### Todos los filtros juntos
+GET http://localhost:5205/api/clientes?pagina=1&tamano=5&buscar=pedro&ordenarPor=nombre&dir=asc
+
+### Petición maliciosa (debe recortarse el tamaño a 50)
+GET http://localhost:5205/api/clientes?tamano=99999
+
+### Página inválida (debe normalizarse a 1)
+GET http://localhost:5205/api/clientes?pagina=-5

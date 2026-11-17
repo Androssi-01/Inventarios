@@ -1,0 +1,102 @@
+# ==================== GET ====================
+
+### Obtener todos los proveedor
+GET http://localhost:5205/api/proveedores
+
+### Obtener proveedor por ID
+GET http://localhost:5205/api/proveedores/2
+
+### Obtener proveedor que no existe
+GET http://localhost:5205/api/proveedores/99999
+
+
+# ==================== POST ====================
+
+### Crear un proveedor (válido)
+POST http://localhost:5205/api/proveedores
+Content-Type: application/json
+
+{
+  "NombreEmpresa":"Empresa Generadora" ,
+  "Contacto": "Juan Carlos",
+  "Email": "JC@gmail.com",
+  "Telefono": "5561721484"
+
+}
+
+### Crear un proveedor (inválido — debe dar 400)
+POST http://localhost:5205/api/proveedores
+Content-Type: application/json
+
+{
+  "NombreEmpresa":"Empresa Fastama Generadora" ,
+  "Contacto": "Pinpon",
+  "Email": "Pinpon.com",
+  "Telefono": "5561321484"
+
+}
+
+
+# ==================== PUT ====================
+
+### Actualizar proveedor
+PUT http://localhost:5205/api/proveedores/1002
+Content-Type: application/json
+
+{
+  "NombreEmpresa": "Empresa Fastama Generadora Actualizada",
+  "Contacto": "PinponV2",
+  "Email": "Pinpon@gmail.com",
+  "Telefono": "5561321484",
+  "Activo": false
+}
+
+### Intentar actualizar proveedor que no existe
+PUT http://localhost:5205/api/proveedores/99999
+Content-Type: application/json
+
+{
+  "NombreEmpresa": "Empresa Fastama Generadora Actualizada",
+  "Contacto": "PinponV2",
+  "Email": "Pinpon@gmail.com",
+  "Telefono": "5561321484",
+  "Activo": false
+}
+
+# ==================== DELETE ====================
+
+### Borrar proveedor
+DELETE http://localhost:5205/api/proveedores/1003
+
+### Intentar borrar proveedor que no existe
+DELETE http://localhost:5205/api/proveedores/99999
+
+### Verificar el estado final
+GET http://localhost:5205/api/proveedores
+
+
+
+
+#=========================================Paginacion API/GET=================================
+http
+### Listar con paginación por defecto (pagina 1, tamano 10)
+GET http://localhost:5205/api/proveedores
+
+### Pagina 2 con 3 por pagina
+GET http://localhost:5205/api/proveedores?pagina=1&tamano=1
+
+### Buscar por texto
+GET http://localhost:5205/api/proveedores?buscar=Norte
+
+### Ordenar por NombreEmpresa descendente
+GET http://localhost:5205/api/proveedores?ordenarPor=nombreempresa&dir=desc
+
+### Todos los filtros juntos
+GET http://localhost:5205/api/proveedores?pagina=1&tamano=2&buscar=Norte&ordenarPor=nombreempresa&dir=asc
+
+### Petición maliciosa (debe recortarse el tamaño a 50)
+GET http://localhost:5205/api/proveedores?tamano=99999
+
+### Página inválida (debe normalizarse a 1)
+GET http://localhost:5205/api/proveedores?pagina=-5
+

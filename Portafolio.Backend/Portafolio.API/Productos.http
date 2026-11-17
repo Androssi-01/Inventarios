@@ -1,0 +1,116 @@
+# ==================== GET ====================
+
+### Obtener todos los productos
+GET http://localhost:5205/api/productos
+
+### Obtener productos por ID
+GET http://localhost:5205/api/productos/2
+
+### Obtener productos que no existe
+GET http://localhost:5205/api/productos/99999
+
+### Obtener productos por precio minimo
+GET http://localhost:5205/api/productos?precioMin=1000
+
+### Obtener productos por precio maximo
+GET http://localhost:5205/api/productos?precioMax=400
+
+# ==================== POST ====================
+
+### Crear un cliente (válido)
+POST http://localhost:5205/api/productos
+Content-Type: application/json
+
+{
+  "sku":"PROD-005" ,
+  "nombre": "Laptop HP 17",
+  "descripcion": "Laptop i7 16GB RAM",
+  "precio": 13500.00,
+  "stock": 2
+}
+
+### Crear un producto (inválido — debe dar 400)
+POST http://localhost:5205/api/productos
+Content-Type: application/json
+
+{
+  "sku":"" ,
+  "nombre": "Laptop HP 18",
+  "descripcion": "Laptop i8 18GB RAM",
+  "precio": -5.00,
+  "stock": 3
+}
+
+# ==================== PUT ====================
+
+### Actualizar productos
+PUT http://localhost:5205/api/productos/1002
+Content-Type: application/json
+
+{
+  "nombre": "Laptop HP 17",
+  "descripcion": "Laptop i6 12GB RAM",
+  "precio": 12500.00,
+  "stock": 1,
+  "activo": true
+}
+
+### Intentar actualizar cliente que no existe
+PUT http://localhost:5205/api/productos/99999
+Content-Type: application/json
+
+{
+  "sku":"" ,
+  "nombre": "Laptop HP 16",
+  "descripcion": "Laptop i6 12GB RAM",
+  "precio": 12500.00,
+  "stock": 1
+}
+
+# ==================== DELETE ====================
+
+### Borrar cliente
+DELETE http://localhost:5205/api/productos/1002
+
+### Intentar borrar producto que no existe
+DELETE http://localhost:5205/api/productos/99999
+
+### Verificar el estado final
+GET http://localhost:5205/api/productos
+
+
+
+
+#=========================================Paginacion API/GET=================================
+http
+### Listar con paginación por defecto (pagina 1, tamano 10)
+GET http://localhost:5205/api/productos
+
+### Pagina 2 con 3 por pagina
+GET http://localhost:5205/api/productos?pagina=1&tamano=1
+
+### Buscar por texto
+GET http://localhost:5205/api/productos?buscar=Laptop
+
+### Ordenar por Sku descendente
+GET http://localhost:5205/api/productos?ordenarPor=sku&dir=desc
+
+### Todos los filtros juntos
+GET http://localhost:5205/api/productos?pagina=1&tamano=2&buscar=Laptop&ordenarPor=nombre&dir=asc
+
+### Petición maliciosa (debe recortarse el tamaño a 50)
+GET http://localhost:5205/api/productos?tamano=99999
+
+### Página inválida (debe normalizarse a 1)
+GET http://localhost:5205/api/productos?pagina=-5
+
+
+###Filtro combinado
+GET http://localhost:5205/api/productos?precioMin=1000&precioMax=15000
+
+http
+### Filtro combinado (precio entre 1000 y 15000)
+GET http://localhost:5205/api/productos?precioMin=1000&precioMax=15000
+
+### Página inválida (debe normalizarse a 1)
+GET http://localhost:5205/api/productos?pagina=-5
