@@ -54,7 +54,7 @@ export default function ClienteForm({ onClienteCreado, clienteEditando, onCancel
             if (onCancelarEdicion) onCancelarEdicion();
 
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.errors) {
+            if (err.response && err.response.data && err.response.data.errors && err.response.data.detail) {
                 const mensajes = Object.values(err.response.data.errors).flat().join(', ');
                 setError(mensajes);
             } else {

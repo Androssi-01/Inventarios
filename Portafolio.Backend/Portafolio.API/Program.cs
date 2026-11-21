@@ -6,7 +6,10 @@ using FluentValidation;
 using Portafolio.API.Services;
 using Portafolio.API.Data;
 using Portafolio.API.Validators;
-using Portafolio.API.Endpoints; // 👈 IMPORTANTE: Para reconocer tus nuevos archivos
+using Portafolio.API.Endpoints;
+using Portafolio.API.Middlewares;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +24,13 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 2. Servicios
+
 builder.Services.AddOpenApi();
 builder.Services.AddValidatorsFromAssemblyContaining<ClienteCreateValidator>();
 builder.Services.AddDbContext<PortafolioDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3. Seguridad JWT
+
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -62,7 +65,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// 4. Middlewares
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseCors("AllowFrontend");
 if (app.Environment.IsDevelopment())
 {
