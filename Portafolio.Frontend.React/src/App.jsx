@@ -3,6 +3,7 @@ import Clientes from './components/Clientes';
 import Productos from './components/Productos';
 import Proveedores from './components/Proveedores';
 import Login from './components/Login';
+import ApiDocs from './components/ApiDocs';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Link className="nav-link" to="/">Clientes</Link>
             <Link className="nav-link" to="/productos">Productos</Link>
             <Link className="nav-link" to="/proveedores">Proveedores</Link>
+            <Link className="nav-link" to="/api-docs">API Docs</Link>
 
             <button onClick={handleLogout} className="btn btn-sm btn-outline-danger ms-auto">
               Cerrar Sesión
@@ -36,6 +38,7 @@ function App() {
         <Route path="/" element={<Clientes />} />
         <Route path="/productos" element={<Productos />} />
         <Route path="/proveedores" element={<Proveedores />} />
+        <Route path="/api-docs" element={<ApiDocs />} />
       </Routes>
     </BrowserRouter>
   );

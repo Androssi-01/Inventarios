@@ -54,11 +54,22 @@ export default function ClienteForm({ onClienteCreado, clienteEditando, onCancel
             if (onCancelarEdicion) onCancelarEdicion();
 
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.errors && err.response.data.detail) {
-                const mensajes = Object.values(err.response.data.errors).flat().join(', ');
-                setError(mensajes);
+            if (err.response && err.response.data) {
+                // 1. Si FluentValidation atrapó el error (trae la propiedad 'errors')
+                if (err.response.data.errors) {
+                    const mensajes = Object.values(err.response.data.errors).flat().join(', ');
+                    setError(mensajes);
+                }
+                // 2. Si el Middleware de .NET atrapó el error de SQL (trae la propiedad 'detail')
+                else if (err.response.data.detail) {
+                    setError(err.response.data.detail);
+                }
+                // 3. Cualquier otro error
+                else {
+                    setError('Error al guardar el cliente.');
+                }
             } else {
-                setError('Error al guardar el cliente.');
+                setError('Error de conexión con el servidor.');
             }
         }
     };

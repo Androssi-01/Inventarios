@@ -7,7 +7,7 @@ const axiosClient = axios.create({
     }
 });
 
-// 👇 1. INTERCEPTOR DE PETICIÓN (EL QUE FALTABA)
+// 1. INTERCEPTOR DE PETICIÓN (EL QUE FALTABA)
 // Esto atrapa cada petición antes de que salga y le inyecta el token
 axiosClient.interceptors.request.use(
     (config) => {
@@ -22,7 +22,7 @@ axiosClient.interceptors.request.use(
     }
 );
 
-// 2. INTERCEPTOR DE RESPUESTA (El que ya tenías)
+// 2. INTERCEPTOR DE RESPUESTA.
 axiosClient.interceptors.response.use(
     (response) => response,
     (error) => {

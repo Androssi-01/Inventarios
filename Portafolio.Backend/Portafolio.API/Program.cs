@@ -8,6 +8,7 @@ using Portafolio.API.Data;
 using Portafolio.API.Validators;
 using Portafolio.API.Endpoints;
 using Portafolio.API.Middlewares;
+using Microsoft.OpenApi;
 
 
 
@@ -24,8 +25,54 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddOpenApi(options =>
+{
+    options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
 
-builder.Services.AddOpenApi();
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        // 1. Definimos el esquema de seguridad (el candado)
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+
+        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Ingresa el token JWT obtenido del login."
+        };
+
+        // 2. Aplicamos el requisito usando la nueva API de .NET 10
+        // OpenApiSecurityRequirement ahora hereda de Dictionary<OpenApiSecuritySchemeReference, List<string>>
+        var securityRequirement = new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+        };
+
+        // La seguridad a nivel de documento se aplica a todas las operaciones
+        // En .NET 10 ya no existe document.SecurityRequirements, se usa el diccionario de Components o se aplica por operación.
+        // Para el documento completo, lo correcto es usar el transformer para añadirlo a cada operación:
+        if (document.Paths != null)
+        {
+            foreach (var path in document.Paths.Values)
+            {
+                // Agregamos la validación de que Operations no sea nulo
+                if (path.Operations != null)
+                {
+                    foreach (var operation in path.Operations.Values)
+                    {
+                        operation.Security ??= new List<OpenApiSecurityRequirement>();
+                        operation.Security.Add(securityRequirement);
+                    }
+                }
+            }
+        }
+
+        return Task.CompletedTask;
+    });
+});
+
 builder.Services.AddValidatorsFromAssemblyContaining<ClienteCreateValidator>();
 builder.Services.AddDbContext<PortafolioDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -68,11 +115,9 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("AllowFrontend");
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
+
+app.MapOpenApi();
 app.UseAuthentication();
 app.UseAuthorization();
 
