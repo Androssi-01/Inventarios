@@ -15,13 +15,26 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Configuración de CORS
+// Busca esta parte y reemplázala:
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        // Leemos los orígenes permitidos desde una variable de entorno, 
+        // o usamos "*" (cualquiera) si estamos en desarrollo local.
+        var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]?.Split(',')
+                             ?? new[] { "*" };
+
+        if (allowedOrigins.Contains("*"))
+        {
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+        else
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
     });
 });
 
