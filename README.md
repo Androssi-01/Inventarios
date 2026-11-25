@@ -3,7 +3,6 @@
 ¡Bienvenido a mi proyecto de portafolio! Esta es una aplicación Full-Stack completa diseñada para demostrar mis habilidades en el desarrollo de software moderno, abarcando desde la base de datos hasta el despliegue en contenedores.
 
 ## Tecnologías Utilizadas
-
 ### Backend
 *   **.NET 10 (Minimal APIs):** Framework principal para la construcción de la API.
 *   **Entity Framework Core:** ORM para el acceso y modelado de datos.
@@ -40,4 +39,3 @@ El proyecto está completamente dockerizado, por lo que **no necesitas instalar 
 3.  En la raíz del proyecto, ejecuta:
     ```bash
     docker compose up --build -d
-.
