@@ -1,4 +1,4 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - portafolio-api
+name: Build and deploy ASP.Net Core app to Azure Web App - portafolio-api-v2
 
 on:
   push:
