@@ -1,0 +1,25 @@
+
+name: Deploy Backend Manual
+
+on: workflow_dispatch # 👈 Esto permite ejecutarlo con un botón
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and Publish
+        run: dotnet publish Portafolio.Backend/Portafolio.API/Portafolio.API.csproj -c Release -o ./publish
+
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'portafolio-api'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish
