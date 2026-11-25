@@ -40,3 +40,4 @@ El proyecto está completamente dockerizado, por lo que **no necesitas instalar 
 3.  En la raíz del proyecto, ejecuta:
     ```bash
     docker compose up --build -d
+.
