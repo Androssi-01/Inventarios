@@ -27,14 +27,12 @@ public class ProductoCreateValidator : AbstractValidator<ProductoCreateDto>
             .When(x => !string.IsNullOrEmpty(x.Descripcion));
 
         RuleFor(x => x.Precio)
-            .NotEmpty()
-                .WithMessage("El Precio del producto no puede estar vacio")
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0)
+                .WithMessage("El Precio no puede ser negativo");
 
         RuleFor(x => x.Stock)
-            .NotEmpty()
-                .WithMessage("El Stock del producto no puede estar vacio")
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0)
+                .WithMessage("El Stock no puede ser negativo"); ;
     }
 }
 
@@ -51,10 +49,12 @@ public class ProductoUpdateValidator : AbstractValidator<ProductoUpdateDto>
             .MinimumLength(2)
                 .WithMessage("El nombre debe de contener al menos 2 caracteres");
         RuleFor(x => x.Precio)
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0)
+                .WithMessage("El Precio no puede ser negativo"); ;
         RuleFor(x => x.Stock)
             .NotNull().WithMessage("El Stock no puede ser null")
-        .GreaterThanOrEqualTo(0);
+        .GreaterThanOrEqualTo(0)
+            .WithMessage("El Stock no puede ser negativo"); ;
         RuleFor(x => x.Descripcion)
             .MaximumLength(255).WithMessage("La descripcion no puede ser mayor a 255 caracteres")
             .When(x => !string.IsNullOrEmpty(x.Descripcion));

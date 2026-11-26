@@ -6,32 +6,48 @@ namespace Portafolio.API.Tests;
 
 public class ClienteValidatorTests
 {
-    [Fact]
-    public void Validator_Deberia_Fallar_Cuando_Email_Es_Invalido()
+    [Theory]
+    [InlineData("correo-malo")]
+    [InlineData("sin-arroba.com")]
+    [InlineData("@test.com")]
+    [InlineData("")]
+    public void Create_Falla_Con_Email_Invalido(string email)
     {
-        // 1. Preparar (Arrange)
-        var validator = new ClienteCreateValidator();
-        var clienteInvalido = new ClienteCreateDto("Ana", "correo-malo", "555-1234", "Calle 1");
+        var dto = new ClienteCreateDto("Ana", email, "555-1234", "Calle 1");
+        var resultado = new ClienteCreateValidator().Validate(dto);
 
-        // 2. Actuar (Act)
-        var resultado = validator.Validate(clienteInvalido);
-
-        // 3. Afirmar (Assert)
         Assert.False(resultado.IsValid);
         Assert.Contains(resultado.Errors, e => e.PropertyName == "Email");
     }
 
-    [Fact]
-    public void Validator_Deberia_Pasar_Cuando_Todos_Los_Datos_Son_Correctos()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("A")]
+    public void Create_Falla_Con_Nombre_Vacio_O_Muy_Corto(string nombre)
     {
-        // 1. Preparar
-        var validator = new ClienteCreateValidator();
-        var clienteValido = new ClienteCreateDto("Ana García", "ana@test.com", "555-1234", "Calle 1");
+        var dto = new ClienteCreateDto(nombre, "ana@test.com", "555-1234", "Calle 1");
+        var resultado = new ClienteCreateValidator().Validate(dto);
 
-        // 2. Actuar
-        var resultado = validator.Validate(clienteValido);
+        Assert.False(resultado.IsValid);
+        Assert.Contains(resultado.Errors, e => e.PropertyName == "Nombre");
+    }
 
-        // 3. Afirmar
+    [Fact]
+    public void Create_Falla_Con_Nombre_Mayor_A_150()
+    {
+        var dto = new ClienteCreateDto(new string('A', 151), "ana@test.com", "555-1234", "Calle 1");
+        var resultado = new ClienteCreateValidator().Validate(dto);
+
+        Assert.Contains(resultado.Errors, e => e.PropertyName == "Nombre");
+    }
+
+    [Fact]
+    public void Create_Acepta_Telefono_Y_Direccion_Nulos()
+    {
+        var dto = new ClienteCreateDto("Ana García", "ana@test.com", null, null);
+        var resultado = new ClienteCreateValidator().Validate(dto);
+
         Assert.True(resultado.IsValid);
     }
 }
