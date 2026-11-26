@@ -8,7 +8,7 @@
   "routes": [
     {
       "route": "/api/*",
-      "allowedMethods": [
+      "methods": [
         "GET",
         "POST",
         "PUT",
