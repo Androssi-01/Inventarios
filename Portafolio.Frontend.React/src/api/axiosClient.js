@@ -5,7 +5,7 @@ const axiosClient = axios.create({
     headers: { 'Content-Type': 'application/json' }
 });
 
-// 1. INTERCEPTOR DE PETICIÓN (EL QUE FALTABA)
+// 1. INTERCEPTOR DE PETICIÓN 
 // Esto atrapa cada petición antes de que salga y le inyecta el token
 axiosClient.interceptors.request.use(
     (config) => {

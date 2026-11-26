@@ -22,8 +22,9 @@ builder.Services.AddCors(options =>
     {
         // Leemos los orígenes permitidos desde una variable de entorno, 
         // o usamos "*" (cualquiera) si estamos en desarrollo local.
-        var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]?.Split(',')
-                             ?? new[] { "*" };
+        var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]
+            ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            ?? new[] { "*" };
 
         if (allowedOrigins.Contains("*"))
         {
