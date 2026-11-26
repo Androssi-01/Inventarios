@@ -1,0 +1,21 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api/*"
+    ]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedMethods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS"
+      ],
+      "rewrite": "https://portafolio-api-auenb2a4e3evcth0.westus2-01.azurewebsites.net/api/*"
+    }
+  ]
+}
