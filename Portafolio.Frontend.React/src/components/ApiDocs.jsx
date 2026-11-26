@@ -3,7 +3,8 @@ import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
 const ApiDocs = () => {
-    const swaggerUrl = '/openapi/v1.json';
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
+    const swaggerUrl = `${apiBase}/openapi/v1.json`;
 
     return (
         <div className="container mt-5">
