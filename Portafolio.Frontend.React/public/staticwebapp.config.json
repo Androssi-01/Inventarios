@@ -15,7 +15,7 @@
         "DELETE",
         "OPTIONS"
       ],
-      "rewrite": "https://portafolio-api-auenb2a4e3evcth0.westus2-01.azurewebsites.net/api/*"
+      "rewrite": "https://portafolio-api-auenb2a4e3evcth0.westus2-01.azurewebsites.net/api/{*restOfPath}"
     }
   ]
 }
