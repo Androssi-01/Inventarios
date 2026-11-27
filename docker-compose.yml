@@ -44,6 +44,8 @@ services:
       - Jwt__Key=${JWT_KEY}
       - Jwt__Issuer=PortafolioAPI
       - Jwt__Audience=PortafolioReact
+      - Admin__Email=${Admin_Email}
+      - Admin__Password=${Admin_Password}
     ports:
       - "5205:8080"
     depends_on:
