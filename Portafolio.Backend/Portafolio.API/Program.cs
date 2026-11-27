@@ -152,7 +152,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    // Escritura: solo Admin
+    options.AddPolicy("SoloAdmin", policy => policy.RequireRole("Admin"));
+});
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<PortafolioDbContext>("base-de-datos");

@@ -70,7 +70,9 @@ public static class ClientesEndpoints
 
             var response = new ClienteResponseDto(cliente.Id, cliente.Nombre, cliente.Email, cliente.Telefono, cliente.Direccion, cliente.FechaAlta, cliente.Activo);
             return Results.Created($"/api/clientes/{cliente.Id}", response);
-        }).AddEndpointFilter<ValidationFilter<ClienteCreateDto>>();
+        })
+        .AddEndpointFilter<ValidationFilter<ClienteCreateDto>>()
+        .RequireAuthorization("SoloAdmin");
 
         // PUT
         group.MapPut("/{id:int}", async (int id, ClienteUpdateDto dto, PortafolioDbContext db) =>
@@ -86,8 +88,9 @@ public static class ClientesEndpoints
 
             var response = new ClienteResponseDto(cliente.Id, cliente.Nombre, cliente.Email, cliente.Telefono, cliente.Direccion, cliente.FechaAlta, cliente.Activo);
             return Results.Ok(response);
-        }).AddEndpointFilter<ValidationFilter<ClienteUpdateDto>>();
-
+        })
+        .AddEndpointFilter<ValidationFilter<ClienteUpdateDto>>()
+        .RequireAuthorization("SoloAdmin");
         // DELETE
         group.MapDelete("/{id:int}", async (int id, PortafolioDbContext db) =>
         {
@@ -97,6 +100,7 @@ public static class ClientesEndpoints
             db.Clientes.Remove(cliente);
             await db.SaveChangesAsync();
             return Results.NoContent();
-        });
+        })
+        .RequireAuthorization("SoloAdmin");
     }
 }

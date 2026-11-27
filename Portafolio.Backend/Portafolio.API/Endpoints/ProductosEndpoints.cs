@@ -95,7 +95,9 @@ public static class ProductosEndpoints
                 producto.Precio, producto.Stock, producto.Activo, producto.FechaCreacion);
 
             return Results.Created($"/api/productos/{producto.Id}", response);
-        }).AddEndpointFilter<ValidationFilter<ProductoCreateDto>>();
+        })
+        .AddEndpointFilter<ValidationFilter<ProductoCreateDto>>()
+        .RequireAuthorization("SoloAdmin");
 
         // PUT
         group.MapPut("/{id:int}", async (int id, ProductoUpdateDto dto, PortafolioDbContext db) =>
@@ -116,7 +118,9 @@ public static class ProductosEndpoints
                 producto.Precio, producto.Stock, producto.Activo, producto.FechaCreacion);
 
             return Results.Ok(response);
-        }).AddEndpointFilter<ValidationFilter<ProductoUpdateDto>>();
+        })
+        .AddEndpointFilter<ValidationFilter<ProductoUpdateDto>>()
+        .RequireAuthorization("SoloAdmin");
 
         // DELETE
         group.MapDelete("/{id:int}", async (int id, PortafolioDbContext db) =>
@@ -128,6 +132,6 @@ public static class ProductosEndpoints
             await db.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        }).RequireAuthorization("SoloAdmin");
     }
 }

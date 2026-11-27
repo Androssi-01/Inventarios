@@ -10,15 +10,27 @@ public static class AuthEndpoints
         var group = app.MapGroup("/api/auth")
                        .WithTags("Autenticación");
 
-        group.MapPost("/login", (LoginRequestDto dto, JwtTokenService tokenService) =>
+        group.MapPost("/login", (LoginRequestDto dto, JwtTokenService tokenService, IConfiguration config) =>
         {
+            // Cuenta demo pública: solo lectura
             if (dto.Email == "demo@portafolio.com" && dto.Password == "Demo123!")
+            {
+                var token = tokenService.GenerateToken(dto.Email, "Demo");
+                return Results.Ok(new LoginResponseDto(token, dto.Email, "Demo"));
+            }
+
+            // Cuenta admin: credenciales fuera del repo
+            var adminEmail = config["Admin:Email"];
+            var adminPassword = config["Admin:Password"];
+
+            if (!string.IsNullOrEmpty(adminEmail) && !string.IsNullOrEmpty(adminPassword)
+                && dto.Email == adminEmail && dto.Password == adminPassword)
             {
                 var token = tokenService.GenerateToken(dto.Email, "Admin");
                 return Results.Ok(new LoginResponseDto(token, dto.Email, "Admin"));
             }
 
             return Results.Unauthorized();
-        }).AllowAnonymous(); // El login debe ser público
+        }).AllowAnonymous();
     }
 }

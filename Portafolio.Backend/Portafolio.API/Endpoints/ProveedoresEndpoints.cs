@@ -114,7 +114,9 @@ public static class ProveedoresEndpoints
             );
 
             return Results.Created($"/api/proveedores/{proveedor.Id}", response);
-        }).AddEndpointFilter<ValidationFilter<ProveedorCreateDto>>();
+        })
+        .AddEndpointFilter<ValidationFilter<ProveedorCreateDto>>()
+        .RequireAuthorization("SoloAdmin");
 
         group.MapPut("/{id:int}", async (int id, ProveedorUpdateDto dto, PortafolioDbContext db) =>
         {
@@ -143,7 +145,9 @@ public static class ProveedoresEndpoints
 
             return Results.Ok(response);
 
-        }).AddEndpointFilter<ValidationFilter<ProveedorUpdateDto>>();
+        })
+        .AddEndpointFilter<ValidationFilter<ProveedorUpdateDto>>()
+        .RequireAuthorization("SoloAdmin");
 
         group.MapDelete("/{id:int}", async (int id, PortafolioDbContext db) =>
         {
@@ -156,7 +160,7 @@ public static class ProveedoresEndpoints
 
             return Results.NoContent();
 
-        });
+        }).RequireAuthorization("SoloAdmin");
     }
 }
 

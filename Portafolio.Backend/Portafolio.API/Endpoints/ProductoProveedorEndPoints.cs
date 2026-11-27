@@ -71,7 +71,7 @@ public static class ProductosProveedoresEndpoints
             await db.SaveChangesAsync();
 
             return Results.Created($"/api/productos-proveedores/{relacion.ProductoId}/{relacion.ProveedorId}", dto);
-        });
+        }).RequireAuthorization("SoloAdmin");
 
         // PUT
         group.MapPut("/{productoId:int}/{proveedorId:int}", async (int productoId, int proveedorId, ProductoProveedorUpdateDto dto, PortafolioDbContext db) =>
@@ -83,7 +83,7 @@ public static class ProductosProveedoresEndpoints
             await db.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        }).RequireAuthorization("SoloAdmin");
 
         // DELETE (Corregido: usa group y la ruta relativa)
         group.MapDelete("/{productoId:int}/{proveedorId:int}", async (int productoId, int proveedorId, PortafolioDbContext db) =>
@@ -95,6 +95,6 @@ public static class ProductosProveedoresEndpoints
             await db.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        }).RequireAuthorization("SoloAdmin");
     } // Cierra el método
 } // Cierra la clase
