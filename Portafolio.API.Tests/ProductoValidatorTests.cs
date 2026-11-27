@@ -20,7 +20,6 @@ public class ProductoValidatorTests
     [Fact]
     public void Create_Acepta_Stock_Cero()
     {
-        // Falla hasta que quites NotEmpty() de Stock
         var resultado = new ProductoCreateValidator().Validate(Crear(stock: 0));
         Assert.True(resultado.IsValid);
     }

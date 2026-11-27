@@ -36,13 +36,13 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: dotnet publish
-        run: dotnet publish Portafolio.Backend/Portafolio.API/Portafolio.API.csproj -c Release -o ${{ env.DOTNET_ROOT }}/myapp
+        run: dotnet publish Portafolio.Backend/Portafolio.API/Portafolio.API.csproj -c Release -o ./publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{ env.DOTNET_ROOT }}/myapp
+          path: ./publish
 
   deploy:
     runs-on: ubuntu-latest
