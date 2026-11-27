@@ -1,40 +1,55 @@
-version: '3.8'
-
 services:
-  # Servicio de la Base de Datos (SQL Server)
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_SA_PASSWORD=${SQL_SA_PASSWORD}
     ports:
       - "1433:1433"
     volumes:
       - sql_data:/var/opt/mssql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong@Passw0rd", "-C", "-Q", "SELECT 1" ]
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1'" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Servicio del Backend (.NET)
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - SQL_SA_PASSWORD=${SQL_SA_PASSWORD}
+    volumes:
+      - ./init.sql:/init.sql:ro
+    restart: "no"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        SQLCMD="/opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P $$SQL_SA_PASSWORD -C -b"
+        if $$SQLCMD -Q "IF DB_ID('PortafolioDB') IS NULL RAISERROR('no existe',16,1)" >/dev/null 2>&1; then
+          echo "La base ya existe, se omite init.sql"
+        else
+          echo "Creando base de datos..."
+          $$SQLCMD -i /init.sql
+        fi
   backend:
     build:
       context: ./Portafolio.Backend/Portafolio.API
       dockerfile: Dockerfile
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PortafolioDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;
-      - Jwt__Key=ESTA_ES_UNA_CLAVE_SECRETA_SUPER_LARGA_Y_SEGURA_PARA_TU_PORTAFOLIO_2026
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PortafolioDB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;
+      - Jwt__Key=${JWT_KEY}
       - Jwt__Issuer=PortafolioAPI
       - Jwt__Audience=PortafolioReact
     ports:
       - "5205:8080"
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
-  # Servicio del Frontend (React)
   frontend:
     build:
       context: ./Portafolio.Frontend.React

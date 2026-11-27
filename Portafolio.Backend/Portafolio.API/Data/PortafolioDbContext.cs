@@ -40,6 +40,9 @@ public class PortafolioDbContext : DbContext
             entity.Property(e => e.FechaCreacion)
                 .HasDefaultValueSql("GETDATE()");
 
+            entity.Property(p => p.Precio)
+            .HasPrecision(18, 2);
+
         });
 
         modelBuilder.Entity<Proveedor>(entity =>
@@ -69,6 +72,9 @@ public class PortafolioDbContext : DbContext
 
             entity.Property(e => e.FechaAsociacion)
                 .HasDefaultValueSql("GETDATE()");
+
+            entity.Property(p => p.PrecioCompra)
+                .HasPrecision(18, 2);
         });
     }
 }

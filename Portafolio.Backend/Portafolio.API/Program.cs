@@ -124,17 +124,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<PortafolioDbContext>("base-de-datos");
+
 var app = builder.Build();
 
+
+
 app.UseMiddleware<ExceptionMiddleware>();
-
 app.UseCors("AllowFrontend");
-
-
-app.MapOpenApi();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health").AllowAnonymous();
+app.MapOpenApi();
 // 5. Mapeo de Endpoints (¡La magia de la limpieza!)
 app.MapAuthEndpoints();
 app.MapClientesEndpoints();
