@@ -9,6 +9,7 @@ using Portafolio.API.Validators;
 using Portafolio.API.Endpoints;
 using Portafolio.API.Middlewares;
 using Microsoft.OpenApi;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 
 
@@ -89,7 +90,12 @@ builder.Services.AddOpenApi(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<ClienteCreateValidator>();
 builder.Services.AddDbContext<PortafolioDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(15),
+            errorNumbersToAdd: null)));
 
 
 builder.Services.AddSingleton<JwtTokenService>();
@@ -136,6 +142,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => false }).AllowAnonymous();
 app.MapHealthChecks("/health").AllowAnonymous();
 app.MapOpenApi();
 // 5. Mapeo de Endpoints (¡La magia de la limpieza!)
