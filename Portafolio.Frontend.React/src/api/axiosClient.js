@@ -24,7 +24,8 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        const esLogin = error.config?.url?.includes('/auth/login');
+        if (error.response?.status === 401 && !esLogin) {
             localStorage.removeItem('accessToken');
             window.location.reload();
         }

@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import axiosClient from '../api/axiosClient';
 
+const DEMO = { email: 'demo@portafolio.com', password: 'Demo123!' };
+
 export default function Login() {
-    const [email, setEmail] = useState('demo@portafolio.com');
-    const [password, setPassword] = useState('Demo123!');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [cargando, setCargando] = useState(false);
+    const DEMO = { email: 'demo@portafolio.com', password: 'Demo123!' };
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -38,32 +42,23 @@ export default function Login() {
                             <form onSubmit={handleLogin}>
                                 <div className="mb-3">
                                     <label className="form-label fw-semibold">Correo Electrónico</label>
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
+                                    <input type="email" className="form-control"
+                                        value={email} onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                                 <div className="mb-4">
                                     <label className="form-label fw-semibold">Contraseña</label>
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
+                                    <input type="password" className="form-control"
+                                        value={password} onChange={(e) => setPassword(e.target.value)} required />
                                 </div>
                                 <button type="submit" className="btn btn-primary w-100 py-2 fw-bold" disabled={cargando}>
                                     {cargando ? 'Entrando...' : 'Entrar al Sistema'}
                                 </button>
-                            </form>
 
-                            <div className="mt-4 text-center text-muted small">
-                                <p className="mb-0">Cuenta de demostración ya cargada por defecto.</p>
-                            </div>
+                                <button type="button" className="btn btn-outline-secondary w-100 mt-2"
+                                    onClick={() => { setEmail(DEMO.email); setPassword(DEMO.password); }}>
+                                    Usar cuenta de demostración
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
