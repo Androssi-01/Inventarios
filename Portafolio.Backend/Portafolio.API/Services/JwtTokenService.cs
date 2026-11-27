@@ -7,11 +7,24 @@ namespace Portafolio.API.Services;
 
 public class JwtTokenService
 {
-    private readonly IConfiguration _config;
+    private readonly SymmetricSecurityKey _key;
+    private readonly string _issuer;
+    private readonly string _audience;
+    private readonly int _expiresMinutes;
 
     public JwtTokenService(IConfiguration config)
     {
-        _config = config;
+        var key = config["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(key) || key.Length < 32)
+            throw new InvalidOperationException(
+                "Jwt:Key no está configurada o tiene menos de 32 caracteres.");
+
+        _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        _issuer = config["Jwt:Issuer"]
+            ?? throw new InvalidOperationException("Falta Jwt:Issuer.");
+        _audience = config["Jwt:Audience"]
+            ?? throw new InvalidOperationException("Falta Jwt:Audience.");
+        _expiresMinutes = config.GetValue<int?>("Jwt:ExpiresMinutes") ?? 60;
     }
 
     public string GenerateToken(string email, string rol)
@@ -24,16 +37,12 @@ public class JwtTokenService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
         var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
+            issuer: _issuer,
+            audience: _audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2), // 2 horas de duración para que pruebes tranquilo
-            signingCredentials: creds
-        );
+            expires: DateTime.UtcNow.AddMinutes(_expiresMinutes),
+            signingCredentials: new SigningCredentials(_key, SecurityAlgorithms.HmacSha256));
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

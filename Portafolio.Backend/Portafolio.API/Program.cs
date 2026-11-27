@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Configuración de CORS
@@ -99,7 +100,14 @@ builder.Services.AddDbContext<PortafolioDbContext>(options =>
 
 
 builder.Services.AddSingleton<JwtTokenService>();
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+    throw new InvalidOperationException("Jwt:Key no está configurada o es demasiado corta.");
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -111,19 +119,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.FromSeconds(30)
         };
 
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine($"❌ ERROR DE AUTENTICACIÓN: {context.Exception.Message}");
+                var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("Portafolio.Auth");
+
+                logger.LogWarning(
+                    "Autenticación JWT fallida en {Path}: {Motivo}",
+                    context.Request.Path,
+                    context.Exception.GetType().Name);
+
                 return Task.CompletedTask;
             },
             OnTokenValidated = context =>
             {
-                Console.WriteLine("✅ TOKEN VALIDADO CORRECTAMENTE");
+                var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("Portafolio.Auth");
+
+                logger.LogDebug(
+                    "Token válido para {Usuario}",
+                    context.Principal?.Identity?.Name ?? "desconocido");
+
                 return Task.CompletedTask;
             }
         };
